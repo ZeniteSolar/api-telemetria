@@ -1,0 +1,27 @@
+{
+  "name": "app-boat",
+  "version": "1.0.0",
+  "description": "App Boat Info",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VinCardoso/app-boat.git"
+  },
+  "author": "Vinicius Cardoso",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VinCardoso/app-boat/issues"
+  },
+  "homepage": "https://github.com/VinCardoso/app-boat#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.4.1",
+    "mongoose": "^5.8.2",
+    "nodemon": "^2.0.2"
+  }
+}
