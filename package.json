@@ -11,12 +11,13 @@
     "url": "git+https://github.com/VinCardoso/app-boat.git"
   },
   "author": "Vinicius Cardoso",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/VinCardoso/app-boat/issues"
   },
   "homepage": "https://github.com/VinCardoso/app-boat#readme",
   "dependencies": {
+    "@hapi/joi": "^16.1.8",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

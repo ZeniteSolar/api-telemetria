@@ -1,15 +1,27 @@
+// Imports
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-require('dotenv/config');
 
+// Config .env
+dotenv.config();
+
+// Set up bodyParser
 app.use(bodyParser.json());
+
+// Conect to DB
+mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
+    () => console.log('MongoDB Cennected!')
+);
 
 // Import Routes
 const dataRoute = require('./routes/data');
+const authRoute = require('./routes/auth');
 
-app.use('/data', dataRoute);
+app.use('/api/data', dataRoute);
+app.use('/api/user', authRoute);
 
 // Middlewares
 
@@ -19,12 +31,6 @@ app.get('/', (req, res) => {
     res.send('We are online');
 });
 
-// Conect to DB
-mongoose.connect(
-    process.env.DB_CONNECTION, 
-    {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
-    () => console.log('Conect to DB')
-);
-
-app.listen(3000);
+// Setup Server
+app.listen(3000, () => console.log('Server Up!'));
 
