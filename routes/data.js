@@ -5,17 +5,17 @@ const Data = require('../models/Data');
 
 // Get All Data
 router.get('/', async (req, res) => {
-    try{
-        const data = await Data.find();
+    try {
+        const data = await Data.find().limit(2000);
         res.json(data);
-    }catch(err){
-        res.json({messege:err});
+    } catch (err) {
+        res.json({ messege: err });
     }
 });
 
 
 // Send Data
-router.post('/', async (req,res) => {
+router.post('/', async (req, res) => {
 
     const data = new Data({
         ts: req.body.ts,
@@ -26,28 +26,28 @@ router.post('/', async (req,res) => {
         info: req.body.info
     })
 
-    try{
+    try {
         const savedData = await data.save();
         res.json(savedData);
-    }catch(err){
-        res.json({messege: err });
+    } catch (err) {
+        res.json({ messege: err });
     }
 
 });
 
 // Get a Specific Data
 router.get('/:dataId', async (req, res) => {
-    try{
+    try {
         const data = await Data.findById(req.params.dataId);
         res.json(data);
-    }catch(err){
-        res.json({messege: err });
+    } catch (err) {
+        res.json({ messege: err });
     }
 });
 
 // Delete Data
 router.delete('/:dataId', async (req, res) => {
-    try{
+    try {
         const removedData = await Data.deleteOne({ _id: req.params.dataId });
         res.json(removedData);
     } catch (err) {
@@ -57,10 +57,10 @@ router.delete('/:dataId', async (req, res) => {
 
 // Update Data
 router.patch('/:dataId', async (req, res) => {
-    try{
+    try {
         const updatedData = await Data.updateOne(
             { _id: req.params.dataId },
-            { $set: {}});
+            { $set: {} });
         res.json(updatedData);
     } catch (err) {
         res.json({ messege: err });
