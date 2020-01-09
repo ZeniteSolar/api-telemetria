@@ -22,9 +22,11 @@ mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUr
 // Import Routes
 const dataRoute = require('./routes/data');
 const authRoute = require('./routes/auth');
+const moduleRoute = require('./routes/module');
 
 app.use('/api/data', dataRoute);
 app.use('/api/user', authRoute);
+app.use('/api/module', moduleRoute);
 
 // Middlewares
 
