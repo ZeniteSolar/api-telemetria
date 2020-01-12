@@ -1,12 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const Data = require('../models/Data');
+const anyBase = require('any-base');
 
+hex2bin = anyBase(anyBase.HEX, anyBase.BIN);
+dec2bin = anyBase(anyBase.DEC, anyBase.BIN);
 
 // Get All Data
 router.get('/', async (req, res) => {
     try {
-        const data = await Data.find().limit(2000);
+        let data = await Data.find();
+        data = data.map((item) => {
+            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+            parts = parts.concat(Array((8 - parts.length)).fill(null));
+            let newObject = item.toObject();
+            newObject['byte'] = parts;
+            return newObject;
+          });
+        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -37,14 +48,24 @@ router.post('/', async (req, res) => {
 
 // Get a Specific Data
 router.get('/:mod', async (req, res) => {
-    var moduleId = req.params.mod;
+    let moduleId = req.params.mod;
     try {
-        const data = await Data.find({ mod: moduleId });
+        let data = await Data.find({ mod: moduleId });
+
+        data = data.map((item) => {
+            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+            parts = parts.concat(Array((8 - parts.length)).fill(null));
+            let newObject = item.toObject();
+            newObject['byte'] = parts;
+            return newObject;
+          });
+        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
     }
 });
+
 
 // Delete Data
 router.delete('/:dataId', async (req, res) => {
@@ -67,6 +88,16 @@ router.patch('/:dataId', async (req, res) => {
         res.json({ messege: err });
     }
 });
+
+const changeEndianness = (string) => {
+    const result = [];
+    let len = string.length - 2;
+    while (len >= 0) {
+      result.push(string.substr(len, 2));
+      len -= 2;
+    }
+    return result.join('');
+}
 
 
 module.exports = router;
