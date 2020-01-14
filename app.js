@@ -20,13 +20,13 @@ mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUr
 );
 
 // Import Routes
+const moduleRoute = require('./routes/module');
 const dataRoute = require('./routes/data');
 const authRoute = require('./routes/auth');
-const moduleRoute = require('./routes/module');
 
-app.use('/api/data', dataRoute);
-app.use('/api/user', authRoute);
-app.use('/api/module', moduleRoute);
+app.use('/data', dataRoute);
+app.use('/user', authRoute);
+app.use('/module', moduleRoute);
 
 // Middlewares
 

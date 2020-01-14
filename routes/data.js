@@ -6,7 +6,16 @@ const Data = require('../models/Data');
 // Get All Data
 router.get('/', async (req, res) => {
     try {
-        const data = await Data.find().limit(2000);
+        let data = await Data.find();
+        
+        data = data.map((item) => {
+            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+            parts = parts.concat(Array((8 - parts.length)).fill(null));
+            let newObject = item.toObject();
+            newObject['byte'] = parts;
+            return newObject;
+          });
+
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -36,9 +45,19 @@ router.post('/', async (req, res) => {
 });
 
 // Get a Specific Data
-router.get('/:dataId', async (req, res) => {
+router.get('/:mod', async (req, res) => {
+
     try {
-        const data = await Data.findById(req.params.dataId);
+        let data = await Data.find({ mod: req.params.mod });
+
+        data = data.map((item) => {
+            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+            parts = parts.concat(Array((8 - parts.length)).fill(null));
+            let newObject = item.toObject();
+            newObject['byte'] = parts;
+            return newObject;
+          });
+        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
