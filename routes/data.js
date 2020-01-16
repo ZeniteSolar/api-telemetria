@@ -6,7 +6,7 @@ const Data = require('../models/Data');
 // Get All Data
 router.get('/', async (req, res) => {
     try {
-        let data = await Data.find().sort({ts_complete: -1}).limit(1000);
+        let data = await Data.find().sort({data_time: -1}).limit(1000);
         
         data = data.map((item) => {
             let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
@@ -37,6 +37,18 @@ router.post('/', async (req, res) => {
 
     try {
         const savedData = await data.save();
+        res.json(savedData);
+    } catch (err) {
+        res.json({ messege: err });
+    }
+
+});
+
+// Send Data
+router.post('/insert/many', async (req, res) => {
+
+    try {
+        const savedData = await Data.insertMany(req.body);
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });
