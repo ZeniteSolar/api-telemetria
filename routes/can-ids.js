@@ -1,12 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const Module = require('../models/Module');
-const { registerModule } = require('../validation/module');
+const AllModule = require('../models/AllModules');
+// const { registerModule } = require('../validation/module');
 
 // Get All Modules
-router.get('/', async (req, res) => {
+router.get('/modules', async (req, res) => {
     try {
-        const modules = await Module.find();
+        const modules = await AllModule.find(
+            { modules: { $elemMatch : { signature: 240 } } },
+            { 'modules.name' : 1, 'modules.description' : 1, 'modules.signature' : 1});
+        res.json(modules);
+      } catch (err) {
+          res.json({ messege: err });
+      }
+});
+
+router.get('/topics', async (req, res) => {
+    try {
+        const modules = await AllModule.find(
+            { modules: { $elemMatch : { signature: 240 } } },
+            { 'modules.name' : 1, 'modules.signature' : 1, 'modules.topics.id' : 1});
         res.json(modules);
       } catch (err) {
           res.json({ messege: err });
@@ -16,16 +29,8 @@ router.get('/', async (req, res) => {
 // Create a New Module
 router.post('/', async (req, res) => {
 
-    // Validation
-        const { error } = registerModule(req.body);
-        if ( error ) return res.status(400).send(error.details[0].message+" 1");
-
     // Create new Módule
-        const module = new Module({
-            name: req.body.name,
-            description: req.body.description,
-            signature: req.body.signature
-        })
+        const module = new AllModule(req.body)
 
     try {
         const savedModule = await module.save();

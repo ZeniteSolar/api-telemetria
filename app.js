@@ -9,7 +9,6 @@ const cors = require('cors');
 // Config .env
 dotenv.config();
 
-
 // Set up bodyParser
 app.use(bodyParser.json());
 app.use(cors());
@@ -20,16 +19,13 @@ mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUr
 );
 
 // Import Routes
-const moduleRoute = require('./routes/module');
-const dataRoute = require('./routes/data');
-const authRoute = require('./routes/auth');
+const dataRoute     = require('./routes/data');
+const matRoute      = require('./routes/mat');
+const labelRoute    = require('./routes/label');
 
 app.use('/data', dataRoute);
-app.use('/user', authRoute);
-app.use('/module', moduleRoute);
-
-// Middlewares
-
+app.use('/mat', matRoute);
+app.use('/label', labelRoute);
 
 // Routes
 app.get('/', (req, res) => {
@@ -38,4 +34,3 @@ app.get('/', (req, res) => {
 
 // Setup Server
 app.listen(3000, () => console.log('Server Up!'));
-

@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
-    }
+    } 
 });
 
 
