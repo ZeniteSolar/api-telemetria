@@ -6,7 +6,7 @@ const Data = require('../models/Data');
 // Get All Data
 router.get('/', async (req, res) => {
     try {
-        let data = await Data.find().sort({data_time: -1}).limit(1000);
+        let data = await Data.find().sort({data_time: -1}).limit(100);
         
         data = data.map((item) => {
             let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
