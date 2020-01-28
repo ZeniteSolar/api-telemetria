@@ -22,10 +22,12 @@ mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUr
 const dataRoute     = require('./routes/data');
 const matRoute      = require('./routes/mat');
 const labelRoute    = require('./routes/label');
+const motorRoute    = require('./routes/motor');
 
 app.use('/data', dataRoute);
 app.use('/mat', matRoute);
 app.use('/label', labelRoute);
+app.use('/motor', motorRoute);
 
 // Routes
 app.get('/', (req, res) => {
