@@ -6,26 +6,55 @@ const byteData = require('byte-data');
 
 // Get All Data
 router.get('/', async (req, res) => {
-    try {
-        let data = await Data.find({ mod : 9 }).sort({data_time: -1}).limit(10);
-        
-        data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            if( parts[1] = 240 ){
-              let object = {};
-              object['y'] = parts[3];
-              object['x'] = item.data_time;
-              return object;
-            }else{
-              return ;
-            }
-          });
 
-        res.json(data);
-    } catch (err) {
-        res.json({ messege: err });
-    } 
+    
+
+    if(req.query.latestDate) {
+        console.log({ lastDate : req.query.latestDate });
+        try {
+            let data = await Data.find({ mod : 9, data_time: { $gte : req.query.latestDate } }).sort({data_time: -1}).limit(10);
+            
+            data = data.map((item) => {
+                let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+                parts = parts.concat(Array((8 - parts.length)).fill(null));
+                if( parts[1] = 240 ){
+                  let object = {};
+                  object['y'] = parts[3];
+                  object['x'] = item.data_time;
+                  return object;
+                }else{
+                  return ;
+                }
+              });
+    
+            res.json(data);
+        } catch (err) {
+            res.json({ messege: err });
+        } 
+    }else{
+        console.log('aqui');
+        try {
+            let data = await Data.find({ mod : 9  }).sort({data_time: 1}).limit(10);
+            
+            data = data.map((item) => {
+                let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+                parts = parts.concat(Array((8 - parts.length)).fill(null));
+                if( parts[1] = 240 ){
+                  let object = {};
+                  object['y'] = parts[3];
+                  object['x'] = item.data_time;
+                  return object;
+                }else{
+                  return ;
+                }
+              });
+    
+            res.json(data);
+        } catch (err) {
+            res.json({ messege: err });
+        } 
+    }
+    
 });
 
 
