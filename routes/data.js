@@ -47,6 +47,20 @@ router.post('/', async (req, res) => {
 // Send Data
 router.post('/insert/many', async (req, res) => {
 
+    req.body = req.body.map((item) => {
+        item.mod = parseInt(item.mod, 16);
+        return item;
+    })
+
+
+    // data = data.map((item) => {
+    //     let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+    //     parts = parts.concat(Array((8 - parts.length)).fill(null));
+    //     let newObject = item.toObject();
+    //     newObject['byte'] = parts;
+    //     return newObject;
+    //   });
+
     try {
         const savedData = await Data.insertMany(req.body);
         res.json(savedData);

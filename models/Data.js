@@ -19,7 +19,7 @@ const DataSchema = mongoose.Schema({
         require: true
     },
     mod: {
-        type: String,
+        type: Number,
         require: true
     },
     info: {
