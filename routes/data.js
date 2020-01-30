@@ -26,17 +26,17 @@ router.get('/', async (req, res) => {
 // Send Data
 router.post('/', async (req, res) => {
 
-    const data = new Data({
-        ts: req.body.ts,
-        ts_u: req.body.ts_u,
-        ts_complete: req.body.ts_complete,
-        data_time: req.body.data_time,
-        mod: parseInt(req.body.mod, 16),
-        info: req.body.info
+    let parts = req.body.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+    
+    let result = new Data ({
+        date : req.body.data_time,
+        mod : parts[0],
+        top : parseInt(req.body.mod, 16),
+        bytes: parts.slice(1)
     })
 
     try {
-        const savedData = await data.save();
+        const savedData = await result.save();
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });
@@ -44,25 +44,21 @@ router.post('/', async (req, res) => {
 
 });
 
-// Send Data
+// Send Many Data
 router.post('/insert/many', async (req, res) => {
 
-    req.body = req.body.map((item) => {
-        item.mod = parseInt(item.mod, 16);
-        return item;
+    let result = req.body.map(item => {
+        let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+        return {
+            date : item.data_time,
+            mod : parts[0],
+            top : parseInt(item.mod, 16),
+            bytes: parts.slice(1)
+        }
     })
 
-
-    // data = data.map((item) => {
-    //     let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-    //     parts = parts.concat(Array((8 - parts.length)).fill(null));
-    //     let newObject = item.toObject();
-    //     newObject['byte'] = parts;
-    //     return newObject;
-    //   });
-
     try {
-        const savedData = await Data.insertMany(req.body);
+        const savedData = await Data.insertMany(result);
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });
