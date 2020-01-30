@@ -7,7 +7,7 @@ const Data = require('../models/Data');
 router.get('/', async (req, res) => {
     try {
         let data = await Data.find().sort({data_time: -1}).limit(100);
-        
+
         data = data.map((item) => {
             let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
             parts = parts.concat(Array((8 - parts.length)).fill(null));
@@ -26,14 +26,22 @@ router.get('/', async (req, res) => {
 // Send Data
 router.post('/', async (req, res) => {
 
-    const data = new Data({
-        ts: req.body.ts,
-        ts_u: req.body.ts_u,
-        ts_complete: req.body.ts_complete,
-        data_time: req.body.data_time,
-        mod: req.body.mod,
-        info: req.body.info
-    })
+    // const data = new Data({
+    //     data_time: req.body.data_time,
+    //     mod: req.body.mod,
+    // })
+
+    let result = req.body.map(item => {
+        let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+        return {
+          date : item.data_time,
+          mod : parseInt(parts[0],16),
+          top : item.mod,
+          bytes: parts.slice(1)
+        }
+      })
+
+      console.log(result);
 
     try {
         const savedData = await data.save();
@@ -44,25 +52,42 @@ router.post('/', async (req, res) => {
 
 });
 
+// // Send Data
+// router.post('/', async (req, res) => {
+
+//     const data = new Data({
+//         ts: req.body.ts,
+//         ts_u: req.body.ts_u,
+//         ts_complete: req.body.ts_complete,
+//         data_time: req.body.data_time,
+//         mod: req.body.mod,
+//         info: req.body.info
+//     })
+
+//     try {
+//         const savedData = await data.save();
+//         res.json(savedData);
+//     } catch (err) {
+//         res.json({ messege: err });
+//     }
+
+// });
+
 // Send Data
 router.post('/insert/many', async (req, res) => {
 
-    req.body = req.body.map((item) => {
-        item.mod = parseInt(item.mod, 16);
-        return item;
-    })
-
-
-    // data = data.map((item) => {
-    //     let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-    //     parts = parts.concat(Array((8 - parts.length)).fill(null));
-    //     let newObject = item.toObject();
-    //     newObject['byte'] = parts;
-    //     return newObject;
-    //   });
+    let result = req.body.map(item => {
+        let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));        
+        return {
+          date : item.data_time,
+          mod : parseInt(parts[0],16),
+          top : item.mod,
+          bytes: parts.slice(1)
+        }
+      })
 
     try {
-        const savedData = await Data.insertMany(req.body);
+        const savedData = await Data.insertMany(result);
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });

@@ -16,8 +16,7 @@ app.use(cors());
 // Conect to DB
 mongoose.connect(process.env.DB_CONNECTION, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true },
     () => console.log('MongoDB Cennected!')
-);
-
+)
 // Import Routes
 const dataRoute     = require('./routes/data');
 const matRoute      = require('./routes/mat');
@@ -35,4 +34,4 @@ app.get('/', (req, res) => {
 });
 
 // Setup Server
-app.listen(3000, () => console.log('Server Up!'));
+app.listen(3000, () => console.log('Server Up Port 3000!'));
