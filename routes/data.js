@@ -6,16 +6,7 @@ const Data = require('../models/Data');
 // Get All Data
 router.get('/', async (req, res) => {
     try {
-        let data = await Data.find().sort({data_time: -1}).limit(100);
-        
-        data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            let newObject = item.toObject();
-            newObject['byte'] = parts;
-            return newObject;
-          });
-
+        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({data_time: -1}).limit(100);
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -70,16 +61,17 @@ router.post('/insert/many', async (req, res) => {
 router.get('/:mod', async (req, res) => {
 
     try {
-        let data = await Data.find({ mod: req.params.mod });
+        let data = await Data.find({ mod: req.params.mod });        
+        res.json(data);
+    } catch (err) {
+        res.json({ messege: err });
+    }
+});
 
-        data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            let newObject = item.toObject();
-            newObject['byte'] = parts;
-            return newObject;
-          });
-        
+router.get('/:mod/:top', async (req, res) => {
+
+    try {
+        let data = await Data.find({ mod: req.params.mod, top: req.params.top });        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
