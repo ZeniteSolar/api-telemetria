@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
         ts_u: req.body.ts_u,
         ts_complete: req.body.ts_complete,
         data_time: req.body.data_time,
-        mod: req.body.mod,
+        mod: parseInt(req.body.mod, 16),
         info: req.body.info
     })
 
@@ -89,28 +89,5 @@ router.get('/:mod', async (req, res) => {
         res.json({ messege: err });
     }
 });
-
-// Delete Data
-router.delete('/:dataId', async (req, res) => {
-    try {
-        const removedData = await Data.deleteOne({ _id: req.params.dataId });
-        res.json(removedData);
-    } catch (err) {
-        res.json({ messege: err });
-    }
-});
-
-// Update Data
-router.patch('/:dataId', async (req, res) => {
-    try {
-        const updatedData = await Data.updateOne(
-            { _id: req.params.dataId },
-            { $set: {} });
-        res.json(updatedData);
-    } catch (err) {
-        res.json({ messege: err });
-    }
-});
-
 
 module.exports = router;
