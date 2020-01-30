@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
         ts_u: req.body.ts_u,
         ts_complete: req.body.ts_complete,
         data_time: req.body.data_time,
-        mod: req.body.mod,
+        mod: parseInt(req.body.mod, 16),
         info: req.body.info
     })
 
