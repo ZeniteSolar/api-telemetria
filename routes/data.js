@@ -5,8 +5,11 @@ const Data = require('../models/Data');
 
 // Get All Data
 router.get('/', async (req, res) => {
+
+    if (req.query.limit == null ) { req.query.limit = 250 };
+
     try {
-        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({data_time: -1}).limit(100);
+        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({data_time: -1}).limit(req.query.limit);
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
