@@ -6,10 +6,10 @@ const Data = require('../models/Data');
 // Get All Data
 router.get('/', async (req, res) => {
 
-    if (req.query.limit == null ) { req.query.limit = 250 };
+    if (req.query.limit == null ) { req.query.limit = 50 };
 
     try {
-        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({data_time: -1}).limit(req.query.limit);
+        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({date: -1}).limit(req.query.limit);
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -63,8 +63,10 @@ router.post('/insert/many', async (req, res) => {
 // Get a Specific Data
 router.get('/:mod', async (req, res) => {
 
+    if (req.query.limit == null ) { req.query.limit = 50 };
+
     try {
-        let data = await Data.find({ mod: req.params.mod });        
+        let data = await Data.find({ mod: req.params.mod }).sort({date: -1}).limit(req.query.limit);        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -73,8 +75,10 @@ router.get('/:mod', async (req, res) => {
 
 router.get('/:mod/:top', async (req, res) => {
 
+    if (req.query.limit == null ) { req.query.limit = 50 };
+
     try {
-        let data = await Data.find({ mod: req.params.mod, top: req.params.top });        
+        let data = await Data.find({ mod: req.params.mod, top: req.params.top }).sort({date: -1}).limit(req.query.limit);        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
