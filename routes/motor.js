@@ -47,30 +47,34 @@ router.get('/:mod/:top/:byte', async (req, res) => {
     }
 });
 
-// // Get All Data
-// router.get('/:limit/:mod/:top/:byteH/:byteL', async (req, res) => {
+// Get All Data
+router.get('/:mod/:top/:byteL/:byteH', async (req, res) => {
 
-//     let mod = req.params.mod;
-//     let top = req.params.top;
-//     let byteH = req.param.byteH;
-//     let byteL = req.param.byteL;
+    let mod     = req.params.mod;
+    let top     = req.params.top;
+    let byteH   = req.params.byteH;
+    let byteL   = req.params.byteL;
 
-//     try {
-//         let data = await Data.find({ mod : mod, top: top  },{ _id : 0, __v: 0 }).sort({data_time: -1}).limit(5);
-        
-//         data = data.map((item) => {
-//             let y = '${item.byte[byteH]}${item.byte[byteL]}';
-//             console.log(y);
-//             return {
-//                 x : item.date,
-//                 y : y
-//             }
-//         });
+    try {
+        let data = await Data.find({ mod : mod, top: top  },{ _id : 0, __v: 0 }).sort({date: -1}).limit(500);
 
-//         res.json(data);
-//     } catch (err) {
-//         res.json({ messege: err });
-//     }
-// });
+        data = data.map((item) => {
+
+            let L = parseInt(item.bytes[byteL], 10);
+            let H = parseInt(item.bytes[byteH], 10);
+
+            let mat = ( ( H * 256) + L ) / 100;
+
+            return {
+                x : item.date,
+                y : mat
+            }
+        });
+
+        res.json(data);
+    } catch (err) {
+        res.json({ messege: err });
+    }
+});
 
 module.exports = router;
