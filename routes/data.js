@@ -5,17 +5,11 @@ const Data = require('../models/Data');
 
 // Get All Data
 router.get('/', async (req, res) => {
-    try {
-        let data = await Data.find().sort({data_time: -1}).limit(100);
-        
-        data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            let newObject = item.toObject();
-            newObject['byte'] = parts;
-            return newObject;
-          });
 
+    if (req.query.limit == null ) { req.query.limit = 200 };
+
+    try {
+        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({date: -1}).limit(req.query.limit);
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
@@ -26,17 +20,17 @@ router.get('/', async (req, res) => {
 // Send Data
 router.post('/', async (req, res) => {
 
-    const data = new Data({
-        ts: req.body.ts,
-        ts_u: req.body.ts_u,
-        ts_complete: req.body.ts_complete,
-        data_time: req.body.data_time,
-        mod: parseInt(req.body.mod, 16),
-        info: req.body.info
+    let parts = req.body.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+    
+    let result = new Data ({
+        date : req.body.data_time,
+        mod : parts[0],
+        top : parseInt(req.body.mod, 16),
+        bytes: parts.slice(1)
     })
 
     try {
-        const savedData = await data.save();
+        const savedData = await result.save();
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });
@@ -44,25 +38,21 @@ router.post('/', async (req, res) => {
 
 });
 
-// Send Data
+// Send Many Data
 router.post('/insert/many', async (req, res) => {
 
-    req.body = req.body.map((item) => {
-        item.mod = parseInt(item.mod, 16);
-        return item;
+    let result = req.body.map(item => {
+        let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
+        return {
+            date : item.data_time,
+            mod : parts[0],
+            top : parseInt(item.mod, 16),
+            bytes: parts.slice(1)
+        }
     })
 
-
-    // data = data.map((item) => {
-    //     let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-    //     parts = parts.concat(Array((8 - parts.length)).fill(null));
-    //     let newObject = item.toObject();
-    //     newObject['byte'] = parts;
-    //     return newObject;
-    //   });
-
     try {
-        const savedData = await Data.insertMany(req.body);
+        const savedData = await Data.insertMany(result);
         res.json(savedData);
     } catch (err) {
         res.json({ messege: err });
@@ -73,44 +63,25 @@ router.post('/insert/many', async (req, res) => {
 // Get a Specific Data
 router.get('/:mod', async (req, res) => {
 
-    try {
-        let data = await Data.find({ mod: req.params.mod });
+    if (req.query.limit == null ) { req.query.limit = 200 };
 
-        data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            let newObject = item.toObject();
-            newObject['byte'] = parts;
-            return newObject;
-          });
-        
+    try {
+        let data = await Data.find({ mod: req.params.mod }).sort({date: -1}).limit(req.query.limit);        
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
     }
 });
 
-// Delete Data
-router.delete('/:dataId', async (req, res) => {
+router.get('/:mod/:top', async (req, res) => {
+    
+    if (req.query.limit == null ) { req.query.limit = 200 };
     try {
-        const removedData = await Data.deleteOne({ _id: req.params.dataId });
-        res.json(removedData);
+        let data = await Data.find({ mod: req.params.mod, top: req.params.top }).sort({date: -1}).limit(req.query.limit);        
+        res.json(data);
     } catch (err) {
         res.json({ messege: err });
     }
 });
-
-// Update Data
-router.patch('/:dataId', async (req, res) => {
-    try {
-        const updatedData = await Data.updateOne(
-            { _id: req.params.dataId },
-            { $set: {} });
-        res.json(updatedData);
-    } catch (err) {
-        res.json({ messege: err });
-    }
-});
-
 
 module.exports = router;

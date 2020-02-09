@@ -2,19 +2,7 @@ const mongoose = require('mongoose');
 
 const DataSchema = mongoose.Schema({
 
-    ts: {
-        type: Number,
-        require: true
-    },
-    ts_u: {
-        type: Number,
-        require: true
-    },
-    ts_complete: {
-        type: Number,
-        require: true
-    },
-    data_time: {
+    date: {
         type: String,
         require: true
     },
@@ -22,14 +10,14 @@ const DataSchema = mongoose.Schema({
         type: Number,
         require: true
     },
-    info: {
-        type: String,
+    top: {
+        type: Number,
         require: true
     },
-    date_on_mongo: {
-        type: Date,
-        default: Date.now
+    bytes: [ String ],
+    dalay: {
+        type: Number
     }
 });
 
-module.exports = mongoose.model('Data', DataSchema);
+module.exports = mongoose.model('Log', DataSchema);

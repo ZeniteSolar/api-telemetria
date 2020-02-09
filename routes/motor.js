@@ -7,135 +7,74 @@ const moment = require('moment');
 // Get All Data
 router.get('/', async (req, res) => {
 
-    if(req.query.latestDate) {
-        console.log({ lastDate : req.query.latestDate });
-        try {
-            let data = await Data.find({ mod : 9, data_time: { $gt : req.query.latestDate } }).sort({data_time: -1}).limit(10);
-            
-            data = data.map((item) => {
-                let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-                parts = parts.concat(Array((8 - parts.length)).fill(null));
-                if( parts[1] = 240 ){
-                  let motor_duty = {};
-                  let motor_soft = {};
-                  motor_duty ['y'] = parts[3];
-                  motor_duty ['x'] = item.data_time;
-                  motor_soft['y'] = parts[3];
-                  motor_duty ['x'] = item.data_time;
-                  
-
-                  return motor_duty ;
-                }else{
-                  return ;
-                }
-              });
-    
-            res.json(data);
-        } catch (err) {
-            res.json({ messege: err });
-        } 
-    }else{
-        console.log('aqui');
-        try {
-            let data = await Data.find({ mod : 9  }).sort({data_time: -1}).limit(100);
-            
-            data = data.map((item) => {
-                let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-                parts = parts.concat(Array((8 - parts.length)).fill(null));
-                if( parts[1] = 240 ){
-                  let object = {};
-                  object['y'] = parts[3];
-                  object['x'] = moment(item.data_time).format('YYYY-MM-DD HH:mm:ss.SSS');
-                  
-                  return object;
-                }else{
-                  return ;
-                }
-              });
-    
-            res.json(data);
-        } catch (err) {
-            res.json({ messege: err });
-        } 
-    }
-    
-});
-
-
-// Send Data
-router.post('/', async (req, res) => {
-
-    const data = new Data({
-        ts: req.body.ts,
-        ts_u: req.body.ts_u,
-        ts_complete: req.body.ts_complete,
-        data_time: req.body.data_time,
-        mod: req.body.mod,
-        info: req.body.info
-    })
-
     try {
-        const savedData = await data.save();
-        res.json(savedData);
+        let data = await Data.find({ mod: 240, top: 9 }).sort({date: -1}).limit(500);
+        
+        data = data.map((item) => {
+            return {
+                x : item.date,
+                y : item.bytes[1]
+            }
+        });
+
+        res.json(data);
+
     } catch (err) {
         res.json({ messege: err });
     }
-
 });
 
-// Send Data
-router.post('/insert/many', async (req, res) => {
+// Get All Data
+router.get('/:mod/:top/:byte', async (req, res) => {
+
+    let mod     = req.params.mod;
+    let top     = req.params.top;
+    let byte    = req.params.byte;
 
     try {
-        const savedData = await Data.insertMany(req.body);
-        res.json(savedData);
-    } catch (err) {
-        res.json({ messege: err });
-    }
-
-});
-
-// Get a Specific Data
-router.get('/:mod', async (req, res) => {
-
-    try {
-        let data = await Data.find({ mod: req.params.mod });
+        let data = await Data.find({ mod : mod, top: top  },{ _id : 0, __v: 0 }).sort({date: -1}).limit(500);
 
         data = data.map((item) => {
-            let parts = item.info.match(/.{2}/g).map(byte => parseInt(byte,16));
-            parts = parts.concat(Array((8 - parts.length)).fill(null));
-            let newObject = item.toObject();
-            newObject['byte'] = parts;
-            return newObject;
-          });
-        
+            return {
+                x : item.date,
+                y : item.bytes[byte]
+            }
+        });
+
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
     }
 });
 
-// Delete Data
-router.delete('/:dataId', async (req, res) => {
+// Get All Data
+router.get('/:mod/:top/:byteL/:byteH', async (req, res) => {
+
+    let mod     = req.params.mod;
+    let top     = req.params.top;
+    let byteH   = req.params.byteH;
+    let byteL   = req.params.byteL;
+
     try {
-        const removedData = await Data.deleteOne({ _id: req.params.dataId });
-        res.json(removedData);
+        let data = await Data.find({ mod : mod, top: top  },{ _id : 0, __v: 0 }).sort({date: -1}).limit(500);
+
+        data = data.map((item) => {
+
+            let L = parseInt(item.bytes[byteL], 10);
+            let H = parseInt(item.bytes[byteH], 10);
+
+            let mat = ( ( H * 256) + L ) / 100;
+
+            return {
+                x : item.date,
+                y : mat
+            }
+        });
+
+        res.json(data);
     } catch (err) {
         res.json({ messege: err });
     }
 });
-
-// Update Data
-router.patch('/:dataId', async (req, res) => {
-    try {
-        const updatedData = await Data.updateOne(
-            { _id: req.params.dataId },
-            { $set: {} });
-        res.json(updatedData);
-    } catch (err) {
-        res.json({ messege: err });
-    }
-});
-
 
 module.exports = router;
