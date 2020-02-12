@@ -24,10 +24,10 @@ const matRoute      = require('./routes/mat');
 const labelRoute    = require('./routes/label');
 const motorRoute    = require('./routes/motor');
 
-app.use('/data', dataRoute);
-app.use('/mat', matRoute);
-app.use('/label', labelRoute);
-app.use('/motor', motorRoute);
+app.use('/data',    dataRoute);
+app.use('/mat',     matRoute);
+app.use('/label',   labelRoute);
+app.use('/motor',   motorRoute);
 
 // Routes
 app.get('/', (req, res) => {
@@ -35,4 +35,4 @@ app.get('/', (req, res) => {
 });
 
 // Setup Server
-app.listen(3000, () => console.log('Server Up!'));
+app.listen(3000, () => console.log('Server Up - http://localhost:3000'));

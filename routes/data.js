@@ -1,15 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const Data = require('../models/Data');
+const aqp = require('api-query-params');
+const moment = require('moment');
 
 
 // Get All Data
 router.get('/', async (req, res) => {
 
-    if (req.query.limit == null ) { req.query.limit = 200 };
+    let { filter, skip, limit, sort, projection, population } = aqp(req.query);
+
+    if ( filter.date != null ) {
+        filter.date['$gt'] = ( filter.date['$gt'] == null ) ? "2000-01-01 00:00:00.000" : moment(filter.date["$gt"]).format('YYYY-MM-DD HH:mm:ss.SSS');
+        filter.date['$lt'] = ( filter.date['$lt'] == null ) ? "2500-12-31 23:59:59.000" : moment(filter.date["$lt"]).format('YYYY-MM-DD HH:mm:ss.SSS');
+    }
+    
+    limit = ( limit == null ) ? 500 : limit ;
+    sort = ( sort == null ) ? '-date' : sort ;
+    projection = ( projection == null ) ? '-__v' : projection ;
 
     try {
-        let data = await Data.find({},{ _id : 0, __v: 0 }).sort({date: -1}).limit(req.query.limit);
+        let data = await Data.find(filter).skip(skip).limit(limit).sort(sort).select(projection).populate(population);
         res.json(data);
     } catch (err) {
         res.json({ messege: err });
